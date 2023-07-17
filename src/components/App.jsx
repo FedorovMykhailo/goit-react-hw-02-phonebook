@@ -1,16 +1,82 @@
-export const App = () => {
-  return (
+import React, { Component } from "react"
+import { nanoid } from "nanoid"
+import ContactForm from "./ContactForm/ContactForm"
+import Filter from "./Filter/Filter"
+import ContactList from "./ContactList/ContactList"
+
+class App extends Component {
+
+  state = {
+  contacts: [ {id: 'id-1', name: 'Rosie Simpson', number: '459-12-56'},
+    {id: 'id-2', name: 'Hermione Kline', number: '443-89-12'},
+    {id: 'id-3', name: 'Eden Clements', number: '645-17-79'},
+    {id: 'id-4', name: 'Annie Copeland', number: '227-91-26'},],
+  filter: '',
+  name: '',
+  number: ''
+  }
+  
+  handleFormSubmit = (evt) => {
+    evt.preventDefault()
+    console.log(this.state);
+    const name = evt.currentTarget.elements.name.value;
+    const phone = evt.currentTarget.elements.number.value;
+    if (this.state.contacts.find(contact=>contact.name===name)) return alert(`${name} is already in contacts`)
+    this.setState(prev => {
+      return { "contacts": [...prev.contacts, ({ "id": nanoid(), "name": name, "number": phone })]}
+    } 
+    )
+    evt.currentTarget.reset()
+  }
+
+  handleFilterChange = (evt) => {
+    const name = evt.currentTarget.value;
+    console.log(name);
+    if (name === "" ) { return this.setState({"filter":""})}
+    return this.setState({
+      "filter":
+        this.state.contacts.filter(contact => contact.name.toLowerCase().includes(name.toLowerCase()))
+    })
+  }
+
+  handleContactDelete = (id) => {
+    console.log(id);
+    this.setState(prev => {
+      return {
+        "contacts": prev.contacts.filter(contact => contact.id !== id),
+        "filter": prev.filter!=="" ? prev.filter.filter(contact => contact.id !== id):"",}
+    })
+  }
+
+  render() {
+     return (
     <div
       style={{
         height: '100vh',
         display: 'flex',
+        flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        fontSize: 40,
-        color: '#010101'
+        fontSize: 30,
+           color: '#010101',
+           margin: '0',
+           textAlign: 'left'
+        
       }}
-    >
-      React homework template1
+       >
+         <div>
+         <h1>Phonebook</h1>
+         <ContactForm submit={this.handleFormSubmit} />
+         <h2>Contacts</h2>
+         <Filter change={this.handleFilterChange } />
+         <ContactList
+           contacts={this.state.filter !== "" ? this.state.filter : this.state.contacts}
+           handleDelete={this.handleContactDelete}
+         />
+         </div>
     </div>
-  );
-};
+  )
+  }
+}
+
+export default App
