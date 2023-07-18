@@ -1,4 +1,5 @@
 import css from "../ContactList/ContactList.module.css"
+import PropTypes from "prop-types";
 
 const ContactList = ({ contacts, handleDelete }) => {
     // console.log(contacts);
@@ -16,3 +17,12 @@ const ContactList = ({ contacts, handleDelete }) => {
 }
 
 export default ContactList
+
+ContactList.propTypes = {
+    contacts: PropTypes.arrayOf(PropTypes.exact({
+        id: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
+        number: PropTypes.string.isRequired,
+    })),
+    handleDelete: PropTypes.func.isRequired,
+}
