@@ -18,36 +18,44 @@ class App extends Component {
   
   handleFormSubmit = (evt) => {
     evt.preventDefault()
-    console.log(this.state);
+    // console.log(this.state);
     const name = evt.currentTarget.elements.name.value;
     const phone = evt.currentTarget.elements.number.value;
-    if (this.state.contacts.find(contact=>contact.name===name)) return alert(`${name} is already in contacts`)
+    if (this.state.contacts.find(contact => contact.name.toLowerCase() === name.toLowerCase()))
+      return alert(`${name.toLowerCase()} is already in contacts`)
     this.setState(prev => {
-      return { "contacts": [...prev.contacts, ({ "id": nanoid(), "name": name, "number": phone })]}
+      return {
+        "contacts": [...prev.contacts, ({ "id": nanoid(), "name": name, "number": phone })]
+      }
     } 
     )
     evt.currentTarget.reset()
   }
 
   handleFilterChange = (evt) => {
-    const name = evt.currentTarget.value;
-    console.log(name);
-    if (name === "" ) { return this.setState({"filter":""})}
-    return this.setState({
-      "filter":
-        this.state.contacts.filter(contact => contact.name.toLowerCase().includes(name.toLowerCase()))
-    })
+    const name = evt.currentTarget.value.toLowerCase().trim();
+    // console.log(name);
+    return this.setState({"filter": name})
+    // if (name === "" ) { return this.setState({"filter":""})}
+    // return this.setState({
+    //   "filter":
+    //     this.state.contacts.filter(contact => contact.name.toLowerCase().includes(name.toLowerCase()))
+    // })
+  }
+
+  filterContacts = (filterValue) => {
+    return this.state.contacts.filter(contact => contact.name.toLowerCase().includes(filterValue))
   }
 
   handleContactDelete = (id) => {
-    console.log(id);
+    // console.log(id);
     this.setState(prev => {
       return {
         "contacts": prev.contacts.filter(contact => contact.id !== id),
-        "filter": prev.filter!=="" ? prev.filter.filter(contact => contact.id !== id):"",}
+        }
     })
   }
-
+// "filter": prev.filter!=="" ? prev.filter.filter(contact => contact.id !== id):"",
   render() {
      return (
     <div
@@ -70,7 +78,8 @@ class App extends Component {
          <h2>Contacts</h2>
          <Filter change={this.handleFilterChange } />
          <ContactList
-           contacts={this.state.filter !== "" ? this.state.filter : this.state.contacts}
+          //  contacts={this.state.filter !== "" ? this.state.filter : this.state.contacts}
+           contacts={this.filterContacts(this.state.filter)}
            handleDelete={this.handleContactDelete}
          />
          </div>
